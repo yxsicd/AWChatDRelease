@@ -1,0 +1,29 @@
+name: Repository checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate shell scripts
+        run: bash -n install.sh scripts/smoke-test.sh
+      - name: Validate release manifests
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+          for path in pathlib.Path("releases").glob("*/manifest.json"):
+              value = json.loads(path.read_text())
+              assert value["schema"] == "awchatd.release-manifest.v1"
+              assert len(value["sourceRevision"]) == 40
+              assert value["platforms"] == ["linux-amd64"]
+          PY
+

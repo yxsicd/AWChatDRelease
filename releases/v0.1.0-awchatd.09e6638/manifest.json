@@ -1,0 +1,21 @@
+{
+  "schema": "awchatd.release-manifest.v1",
+  "releaseTag": "v0.1.0-awchatd.09e6638",
+  "productVersion": "0.1.0",
+  "sourceRepository": "yxsicd/AWChatD",
+  "sourceRevision": "09e663848395c09ea18b2938a2ad231b0bb44e29",
+  "platforms": [
+    "linux-amd64"
+  ],
+  "assets": [
+    "awchatd-linux-amd64.tar.gz",
+    "SHA256SUMS"
+  ],
+  "smoke": {
+    "health": true,
+    "websiteSkills": true,
+    "serviceDescriptorCapabilities": 15,
+    "mcpTools": 15,
+    "productionMutationsInvoked": false
+  }
+}
