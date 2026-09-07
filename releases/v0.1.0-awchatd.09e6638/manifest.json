@@ -12,7 +12,7 @@
     "SHA256SUMS"
   ],
   "assetSha256": {
-    "awchatd-linux-arm64.tar.gz": "47d8de928188828b8aa9c957f30b0e9f5c55409de172154c819ff771d3568686"
+    "awchatd-linux-arm64.tar.gz": "a185619c14633852de1f63414b276d6ec58d058477809515a84aab4588f39a82"
   },
   "smoke": {
     "health": true,
