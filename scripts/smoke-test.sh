@@ -64,6 +64,9 @@ curl --fail --silent --show-error --max-time 5 \
   -H 'MCP-Protocol-Version: 2025-11-25' \
   --data-raw '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' \
   http://127.0.0.1:18790/mcp >"$runtime/tools.json"
+curl --fail --silent --show-error --max-time 5 \
+  -H "Authorization: Bearer $token" \
+  http://127.0.0.1:18790/v1/authority >"$runtime/authority.json"
 
 python3 - "$runtime" "$expected_revision" <<'PY'
 import json
@@ -77,23 +80,29 @@ descriptor = json.loads((root / "service.json").read_text())
 skill = (root / "SKILL.md").read_text()
 initialize = json.loads((root / "initialize.json").read_text())
 tools = json.loads((root / "tools.json").read_text())["result"]["tools"]
+authority = json.loads((root / "authority.json").read_text())
 
 assert health["buildRevision"] == expected
 assert descriptor["service"]["buildRevision"] == expected
 assert descriptor["capabilityCoverage"] == "complete-public-http-application-surface"
-assert len(descriptor["capabilities"]) == 15
-assert len(tools) == 15
-assert len({tool["name"] for tool in tools}) == 15
-assert sum(tool["annotations"]["readOnlyHint"] for tool in tools) == 7
+assert len(descriptor["capabilities"]) == 16
+assert len(tools) == 16
+assert len({tool["name"] for tool in tools}) == 16
+assert sum(tool["annotations"]["readOnlyHint"] for tool in tools) == 8
+assert authority["schema"] == "second-brain.authority-status.v1"
+assert authority["phase"] == "phase_a_read_only"
+assert authority["authorityMigrationEnabled"] is False
+assert authority["runtimeBindingMutationsEnabled"] is False
+assert authority["messagingMutationsEnabled"] is False
 assert 'service-manifest: "./service.json"' in skill
 assert initialize["result"]["protocolVersion"] == "2025-11-25"
 print(json.dumps({
     "sourceRevision": expected,
     "health": "ok",
-    "capabilities": 15,
-    "mcpTools": 15,
-    "readOnlyTools": 7,
+    "capabilities": 16,
+    "mcpTools": 16,
+    "readOnlyTools": 8,
+    "authorityPhase": authority["phase"],
     "mutationToolsInvoked": False,
 }))
 PY
-
