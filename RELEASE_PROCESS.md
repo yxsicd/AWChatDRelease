@@ -8,7 +8,7 @@ release archive.
 1. Verify the private source revision and its full test gates.
 2. Build the declared target architecture from that exact revision.
 3. Run the binary with unreachable dependencies and fake credentials.
-4. Create `awchatd-linux-amd64.tar.gz` with this layout:
+4. Create `awchatd-linux-arm64.tar.gz` with this layout:
 
    ```text
    awchatd-release/
@@ -27,4 +27,3 @@ Do not publish source checkouts, Cargo credentials, operator tokens, production
 configuration, runtime volumes, task rows or browser bindings. A successful smoke
 test proves installation and protocol discovery for the packaged binary; it does
 not prove external dependencies or authorize a production rollout.
-

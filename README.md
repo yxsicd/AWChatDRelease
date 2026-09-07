@@ -6,7 +6,7 @@ provenance and a GitHub Actions smoke test.
 
 ## Install
 
-Linux amd64 is available in the first release:
+Linux arm64 is available in the first release:
 
 ```sh
 curl -fsSLO https://raw.githubusercontent.com/yxsicd/AWChatDRelease/main/install.sh
@@ -35,9 +35,8 @@ published or when `Release smoke` is started manually with a release tag.
 
 Each GitHub Release contains:
 
-- `awchatd-linux-amd64.tar.gz`: `awchatd`, `awchatctl`, smoke configuration and provenance.
+- `awchatd-linux-arm64.tar.gz`: `awchatd`, `awchatctl`, smoke configuration and provenance.
 - `SHA256SUMS`: SHA-256 fence for every downloadable release asset.
 - A release description identifying the exact private-source revision and tested platform.
 
 Public artifacts contain no operator credentials or production bindings.
-

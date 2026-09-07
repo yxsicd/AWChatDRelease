@@ -24,6 +24,5 @@ jobs:
               value = json.loads(path.read_text())
               assert value["schema"] == "awchatd.release-manifest.v1"
               assert len(value["sourceRevision"]) == 40
-              assert value["platforms"] == ["linux-amd64"]
+              assert value["platforms"] == ["linux-arm64"]
           PY
-

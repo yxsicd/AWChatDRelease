@@ -5,12 +5,15 @@
   "sourceRepository": "yxsicd/AWChatD",
   "sourceRevision": "09e663848395c09ea18b2938a2ad231b0bb44e29",
   "platforms": [
-    "linux-amd64"
+    "linux-arm64"
   ],
   "assets": [
-    "awchatd-linux-amd64.tar.gz",
+    "awchatd-linux-arm64.tar.gz",
     "SHA256SUMS"
   ],
+  "assetSha256": {
+    "awchatd-linux-arm64.tar.gz": "47d8de928188828b8aa9c957f30b0e9f5c55409de172154c819ff771d3568686"
+  },
   "smoke": {
     "health": true,
     "websiteSkills": true,
