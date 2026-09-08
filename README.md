@@ -11,7 +11,7 @@ Linux arm64 is available in the current release:
 ```sh
 curl -fsSLO https://raw.githubusercontent.com/yxsicd/AWChatDRelease/main/install.sh
 chmod +x install.sh
-AWCHATD_RELEASE_TAG=v0.4.0-awchatd.9979f65 ./install.sh "$HOME/.local"
+AWCHATD_RELEASE_TAG=v0.5.0-awchatd.26c14c5 ./install.sh "$HOME/.local"
 ```
 
 The installer downloads the release archive and `SHA256SUMS`, verifies the exact
@@ -21,12 +21,12 @@ archive digest, and installs into the requested prefix without `sudo`.
 
 ```sh
 ./scripts/smoke-test.sh "$HOME/.local" \
-  9979f65c7c87f1feec6f0c967b5736d2f75f1227
+  26c14c583f0bf04b656a2655d7bd4eaf2767f2c0
 ```
 
 The smoke test starts a local deployment with unreachable dependencies and fake
 credentials. It checks health, Website Skills discovery, the service descriptor,
-MCP discovery of 20 tools, fixed-CRC health without OAuth, the read-only MCPGit authority
+MCP discovery of 25 tools, fixed-CRC health without OAuth, the read-only MCPGit authority
 projection, and equivalent sanitized HTTP/MCP failure for the four-object model
 when its isolated smoke authority is intentionally absent. It does not call any
 mutation tool.
