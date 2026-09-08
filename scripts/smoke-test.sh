@@ -69,6 +69,8 @@ curl --fail --silent --show-error --max-time 5 \
 curl --fail --silent --show-error --max-time 5 \
   -H "Authorization: Bearer $token" \
   http://127.0.0.1:18790/v1/authority >"$runtime/authority.json"
+curl --fail --silent --show-error --max-time 5 \
+  http://127.0.0.1:18790/v1/status >"$runtime/status.json"
 model_http_status="$(curl --silent --show-error --max-time 5 \
   -o "$runtime/model-http.json" -w '%{http_code}' \
   -H "Authorization: Bearer $token" \
@@ -101,6 +103,7 @@ skill = (root / "SKILL.md").read_text()
 initialize = json.loads((root / "initialize.json").read_text())
 tools = json.loads((root / "tools.json").read_text())["result"]["tools"]
 authority = json.loads((root / "authority.json").read_text())
+status = json.loads((root / "status.json").read_text())
 model_http = json.loads((root / "model-http.json").read_text())
 model_mcp = json.loads((root / "model-mcp.json").read_text())["result"]
 health_mcp_crc = json.loads((root / "health-mcp-crc.json").read_text())["result"]
@@ -120,6 +123,9 @@ assert authority["phase"] == "phase_a_read_only"
 assert authority["authorityMigrationEnabled"] is False
 assert authority["runtimeBindingMutationsEnabled"] is False
 assert authority["messagingMutationsEnabled"] is False
+assert status["backgroundInspectionEnabled"] is False
+assert status["dispatcher"]["enabled"] is False
+assert status["authorityRecovery"]["enabled"] is False
 assert model_http_status == 503
 assert model_http == {"error": "four-object authority is unavailable", "ok": False}
 assert model_mcp["isError"] is True
@@ -140,6 +146,7 @@ print(json.dumps({
     "fixedCrcHealth": True,
     "modelHttpMcpParity": "sanitized-unavailable",
     "authorityPhase": authority["phase"],
+    "backgroundLoopsEnabled": False,
     "mutationToolsInvoked": False,
 }))
 PY

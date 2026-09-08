@@ -11,7 +11,7 @@ Linux arm64 is available in the current release:
 ```sh
 curl -fsSLO https://raw.githubusercontent.com/yxsicd/AWChatDRelease/main/install.sh
 chmod +x install.sh
-AWCHATD_RELEASE_TAG=v0.5.0-awchatd.26c14c5 ./install.sh "$HOME/.local"
+AWCHATD_RELEASE_TAG=v0.6.0-awchatd.124910a ./install.sh "$HOME/.local"
 ```
 
 The installer downloads the release archive and `SHA256SUMS`, verifies the exact
@@ -21,7 +21,7 @@ archive digest, and installs into the requested prefix without `sudo`.
 
 ```sh
 ./scripts/smoke-test.sh "$HOME/.local" \
-  26c14c583f0bf04b656a2655d7bd4eaf2767f2c0
+  124910ac3462277ee6257bf13ca0815cacfed2b8
 ```
 
 The smoke test starts a local deployment with unreachable dependencies and fake
@@ -29,7 +29,8 @@ credentials. It checks health, Website Skills discovery, the service descriptor,
 MCP discovery of 25 tools, fixed-CRC health without OAuth, the read-only MCPGit authority
 projection, and equivalent sanitized HTTP/MCP failure for the four-object model
 when its isolated smoke authority is intentionally absent. It does not call any
-mutation tool.
+mutation tool. It also verifies browser polling, resident execution and
+authority recovery remain disabled in the isolated smoke profile.
 
 GitHub Actions runs the same install and deployment flow when a release is
 published or when `Release smoke` is started manually with a release tag.
