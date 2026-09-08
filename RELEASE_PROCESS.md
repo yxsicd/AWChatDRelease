@@ -7,7 +7,8 @@ release archive.
 
 1. Verify the private source revision and its full test gates.
 2. Build the declared target architecture from that exact revision.
-3. Run the binary with unreachable dependencies and fake credentials.
+3. Run the binary with unreachable dependencies and fake credentials. Verify
+   the four-object model has equivalent sanitized HTTP and MCP failure semantics.
 4. Create `awchatd-linux-arm64.tar.gz` with this layout:
 
    ```text

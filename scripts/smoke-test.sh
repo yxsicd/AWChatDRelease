@@ -67,41 +67,64 @@ curl --fail --silent --show-error --max-time 5 \
 curl --fail --silent --show-error --max-time 5 \
   -H "Authorization: Bearer $token" \
   http://127.0.0.1:18790/v1/authority >"$runtime/authority.json"
+model_http_status="$(curl --silent --show-error --max-time 5 \
+  -o "$runtime/model-http.json" -w '%{http_code}' \
+  -H "Authorization: Bearer $token" \
+  http://127.0.0.1:18790/v1/model)"
+curl --fail --silent --show-error --max-time 5 \
+  -H "Authorization: Bearer $token" \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H 'MCP-Protocol-Version: 2025-11-25' \
+  --data-raw '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"awchat_model","arguments":{}}}' \
+  http://127.0.0.1:18790/mcp >"$runtime/model-mcp.json"
 
-python3 - "$runtime" "$expected_revision" <<'PY'
+python3 - "$runtime" "$expected_revision" "$model_http_status" <<'PY'
 import json
 import pathlib
 import sys
 
 root = pathlib.Path(sys.argv[1])
 expected = sys.argv[2]
+model_http_status = int(sys.argv[3])
 health = json.loads((root / "health.json").read_text())
 descriptor = json.loads((root / "service.json").read_text())
 skill = (root / "SKILL.md").read_text()
 initialize = json.loads((root / "initialize.json").read_text())
 tools = json.loads((root / "tools.json").read_text())["result"]["tools"]
 authority = json.loads((root / "authority.json").read_text())
+model_http = json.loads((root / "model-http.json").read_text())
+model_mcp = json.loads((root / "model-mcp.json").read_text())["result"]
 
 assert health["buildRevision"] == expected
 assert descriptor["service"]["buildRevision"] == expected
 assert descriptor["capabilityCoverage"] == "complete-public-http-application-surface"
-assert len(descriptor["capabilities"]) == 16
-assert len(tools) == 16
-assert len({tool["name"] for tool in tools}) == 16
-assert sum(tool["annotations"]["readOnlyHint"] for tool in tools) == 8
+assert len(descriptor["capabilities"]) == 17
+assert len(tools) == 17
+assert len({tool["name"] for tool in tools}) == 17
+assert sum(tool["annotations"]["readOnlyHint"] for tool in tools) == 9
+assert any(tool["name"] == "awchat_model" for tool in tools)
 assert authority["schema"] == "second-brain.authority-status.v1"
 assert authority["phase"] == "phase_a_read_only"
 assert authority["authorityMigrationEnabled"] is False
 assert authority["runtimeBindingMutationsEnabled"] is False
 assert authority["messagingMutationsEnabled"] is False
+assert model_http_status == 503
+assert model_http == {"error": "four-object authority is unavailable", "ok": False}
+assert model_mcp["isError"] is True
+assert model_mcp["structuredContent"] == {
+    "httpStatus": model_http_status,
+    "result": model_http,
+}
 assert 'service-manifest: "./service.json"' in skill
 assert initialize["result"]["protocolVersion"] == "2025-11-25"
 print(json.dumps({
     "sourceRevision": expected,
     "health": "ok",
-    "capabilities": 16,
-    "mcpTools": 16,
-    "readOnlyTools": 8,
+    "capabilities": 17,
+    "mcpTools": 17,
+    "readOnlyTools": 9,
+    "modelHttpMcpParity": "sanitized-unavailable",
     "authorityPhase": authority["phase"],
     "mutationToolsInvoked": False,
 }))
