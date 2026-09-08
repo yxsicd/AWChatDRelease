@@ -7,6 +7,7 @@ binary="$prefix/bin/awchatd"
 control="$prefix/bin/awchatctl"
 config="$prefix/share/awchatd/config/smoke.yaml"
 token="awchatd-release-smoke-only"
+verify_crc="awchatd-release-smoke-crc"
 runtime="$(mktemp -d)"
 pid=""
 
@@ -28,6 +29,7 @@ AWMCP_VERIFY=smoke-only \
 AGENTWEB_RGW_TOKEN=smoke-only \
 YXSGIT_SECOND_BRAIN_BASIC_VERIFY=smoke-only \
 AWCHATD_OPERATOR_TOKEN="$token" \
+AWCHATD_PROGRESS_VERIFY_CRC="$verify_crc" \
 AWCHATD_CHAT_PROTECTION_STATE_PATH="$runtime/chat-protection.json" \
   "$binary" --config "$config" serve >"$runtime/service.log" 2>&1 &
 pid=$!
@@ -78,6 +80,12 @@ curl --fail --silent --show-error --max-time 5 \
   -H 'MCP-Protocol-Version: 2025-11-25' \
   --data-raw '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"awchat_model","arguments":{}}}' \
   http://127.0.0.1:18790/mcp >"$runtime/model-mcp.json"
+curl --fail --silent --show-error --max-time 5 \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H 'MCP-Protocol-Version: 2025-11-25' \
+  --data-raw "{\"jsonrpc\":\"2.0\",\"id\":4,\"method\":\"tools/call\",\"params\":{\"name\":\"awchat_health\",\"arguments\":{\"verifyCrc\":\"$verify_crc\"}}}" \
+  http://127.0.0.1:18790/mcp >"$runtime/health-mcp-crc.json"
 
 python3 - "$runtime" "$expected_revision" "$model_http_status" <<'PY'
 import json
@@ -95,14 +103,17 @@ tools = json.loads((root / "tools.json").read_text())["result"]["tools"]
 authority = json.loads((root / "authority.json").read_text())
 model_http = json.loads((root / "model-http.json").read_text())
 model_mcp = json.loads((root / "model-mcp.json").read_text())["result"]
+health_mcp_crc = json.loads((root / "health-mcp-crc.json").read_text())["result"]
 
 assert health["buildRevision"] == expected
 assert descriptor["service"]["buildRevision"] == expected
 assert descriptor["capabilityCoverage"] == "complete-public-http-application-surface"
-assert len(descriptor["capabilities"]) == 17
-assert len(tools) == 17
-assert len({tool["name"] for tool in tools}) == 17
-assert sum(tool["annotations"]["readOnlyHint"] for tool in tools) == 9
+assert len(descriptor["capabilities"]) == 20
+assert len(tools) == 20
+assert len({tool["name"] for tool in tools}) == 20
+assert sum(tool["annotations"]["readOnlyHint"] for tool in tools) == 10
+assert all(capability["mcp"]["authentication"] == "operator-bearer-or-verify-crc" for capability in descriptor["capabilities"])
+assert all("verifyCrc" in tool["inputSchema"]["properties"] for tool in tools)
 assert any(tool["name"] == "awchat_model" for tool in tools)
 assert authority["schema"] == "second-brain.authority-status.v1"
 assert authority["phase"] == "phase_a_read_only"
@@ -116,14 +127,17 @@ assert model_mcp["structuredContent"] == {
     "httpStatus": model_http_status,
     "result": model_http,
 }
+assert health_mcp_crc["isError"] is False
+assert health_mcp_crc["structuredContent"]["buildRevision"] == expected
 assert 'service-manifest: "./service.json"' in skill
 assert initialize["result"]["protocolVersion"] == "2025-11-25"
 print(json.dumps({
     "sourceRevision": expected,
     "health": "ok",
-    "capabilities": 17,
-    "mcpTools": 17,
-    "readOnlyTools": 9,
+    "capabilities": 20,
+    "mcpTools": 20,
+    "readOnlyTools": 10,
+    "fixedCrcHealth": True,
     "modelHttpMcpParity": "sanitized-unavailable",
     "authorityPhase": authority["phase"],
     "mutationToolsInvoked": False,
