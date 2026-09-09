@@ -111,13 +111,14 @@ health_mcp_crc = json.loads((root / "health-mcp-crc.json").read_text())["result"
 assert health["buildRevision"] == expected
 assert descriptor["service"]["buildRevision"] == expected
 assert descriptor["capabilityCoverage"] == "complete-public-http-application-surface"
-assert len(descriptor["capabilities"]) == 25
-assert len(tools) == 25
-assert len({tool["name"] for tool in tools}) == 25
+assert len(descriptor["capabilities"]) == 26
+assert len(tools) == 26
+assert len({tool["name"] for tool in tools}) == 26
 assert sum(tool["annotations"]["readOnlyHint"] for tool in tools) == 13
 assert all(capability["mcp"]["authentication"] == "operator-bearer-or-verify-crc" for capability in descriptor["capabilities"])
 assert all("verifyCrc" in tool["inputSchema"]["properties"] for tool in tools)
 assert any(tool["name"] == "awchat_model" for tool in tools)
+assert any(tool["name"] == "awchat_message_respond" for tool in tools)
 assert authority["schema"] == "second-brain.authority-status.v1"
 assert authority["phase"] == "phase_a_read_only"
 assert authority["authorityMigrationEnabled"] is False
@@ -140,8 +141,8 @@ assert initialize["result"]["protocolVersion"] == "2025-11-25"
 print(json.dumps({
     "sourceRevision": expected,
     "health": "ok",
-    "capabilities": 25,
-    "mcpTools": 25,
+    "capabilities": 26,
+    "mcpTools": 26,
     "readOnlyTools": 13,
     "fixedCrcHealth": True,
     "modelHttpMcpParity": "sanitized-unavailable",
