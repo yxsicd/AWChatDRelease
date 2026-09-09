@@ -1,0 +1,29 @@
+{
+  "schema": "awchatd.release-manifest.v1",
+  "releaseTag": "v0.8.0-awchatd.94d9c34",
+  "productVersion": "0.1.0",
+  "sourceRepository": "yxsicd/AWChatD",
+  "sourceRevision": "94d9c341c676673c46176ffa01b40a02a259516d",
+  "platforms": [
+    "linux-arm64"
+  ],
+  "assets": [
+    "awchatd-linux-arm64.tar.gz",
+    "SHA256SUMS"
+  ],
+  "assetSha256": {
+    "awchatd-linux-arm64.tar.gz": "122b6bebe7b1b528edde2632b48d6771ef9ac64113ca12f7eec0a2b841907845"
+  },
+  "smoke": {
+    "health": true,
+    "websiteSkills": true,
+    "serviceDescriptorCapabilities": 25,
+    "mcpTools": 25,
+    "readOnlyTools": 13,
+    "fixedCrcHealth": true,
+    "modelHttpMcpParity": "sanitized-unavailable",
+    "authorityPhase": "phase_a_read_only",
+    "backgroundLoopsEnabled": false,
+    "productionMutationsInvoked": false
+  }
+}
