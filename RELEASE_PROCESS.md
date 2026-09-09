@@ -6,10 +6,11 @@ copies only the resulting binaries, smoke configuration and provenance into the
 release archive.
 
 1. Verify the private source revision and its full test gates.
-2. Build the declared target architecture from that exact revision.
-3. Run the binary with unreachable dependencies and fake credentials. Verify
+2. Build Linux arm64 and amd64 from that exact revision with the source-owned
+   `scripts/build-release-assets.sh` entrypoint.
+3. Run each native binary with unreachable dependencies and fake credentials. Verify
    the four-object model has equivalent sanitized HTTP and MCP failure semantics.
-4. Create `awchatd-linux-arm64.tar.gz` with this layout:
+4. Create `awchatd-linux-arm64.tar.gz` and `awchatd-linux-amd64.tar.gz` with this layout:
 
    ```text
    awchatd-release/
@@ -21,8 +22,8 @@ release archive.
 
 5. Generate `SHA256SUMS` after the archive is final.
 6. Commit the matching `releases/<tag>/manifest.json` before publishing the tag.
-7. Create the GitHub Release with both assets. The `release.published` workflow
-   must install the public asset and pass the isolated deployment smoke test.
+7. Create the GitHub Release with both archives and `SHA256SUMS`. The
+   `release.published` matrix must install and smoke each asset on its native runner.
 
 Do not publish source checkouts, Cargo credentials, operator tokens, production
 configuration, runtime volumes, task rows or browser bindings. A successful smoke

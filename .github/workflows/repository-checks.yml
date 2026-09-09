@@ -20,9 +20,19 @@ jobs:
           python3 - <<'PY'
           import json
           import pathlib
+          platform_assets = {
+              "linux-arm64": "awchatd-linux-arm64.tar.gz",
+              "linux-amd64": "awchatd-linux-amd64.tar.gz",
+          }
           for path in pathlib.Path("releases").glob("*/manifest.json"):
               value = json.loads(path.read_text())
               assert value["schema"] == "awchatd.release-manifest.v1"
               assert len(value["sourceRevision"]) == 40
-              assert value["platforms"] == ["linux-arm64"]
+              platforms = value["platforms"]
+              assert platforms and len(platforms) == len(set(platforms))
+              assert all(platform in platform_assets for platform in platforms)
+              expected_assets = {platform_assets[platform] for platform in platforms}
+              assert set(value["assets"]) == expected_assets | {"SHA256SUMS"}
+              assert set(value["assetSha256"]) == expected_assets
+              assert all(len(value["assetSha256"][asset]) == 64 for asset in expected_assets)
           PY

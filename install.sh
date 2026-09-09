@@ -4,12 +4,12 @@ set -euo pipefail
 repository="${AWCHATD_RELEASE_REPOSITORY:-yxsicd/AWChatDRelease}"
 tag="${AWCHATD_RELEASE_TAG:-}"
 prefix="${1:-${AWCHATD_INSTALL_PREFIX:-$HOME/.local}}"
-asset="awchatd-linux-arm64.tar.gz"
 
 case "$(uname -s)/$(uname -m)" in
-  Linux/aarch64|Linux/arm64) ;;
+  Linux/aarch64|Linux/arm64) asset="awchatd-linux-arm64.tar.gz" ;;
+  Linux/x86_64|Linux/amd64) asset="awchatd-linux-amd64.tar.gz" ;;
   *)
-    echo "AWChatDRelease currently supports Linux arm64 only." >&2
+    echo "AWChatDRelease supports Linux arm64 and amd64." >&2
     exit 2
     ;;
 esac
