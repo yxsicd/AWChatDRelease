@@ -8,7 +8,7 @@ on:
       tag:
         description: Existing AWChatDRelease tag
         required: true
-        default: v0.8.1-awchatd.eeea025
+        default: v0.8.2-awchatd.2f9d1fe
 
 permissions:
   contents: read

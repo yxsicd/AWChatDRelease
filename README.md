@@ -11,7 +11,7 @@ Linux arm64 is available in the current release:
 ```sh
 curl -fsSLO https://raw.githubusercontent.com/yxsicd/AWChatDRelease/main/install.sh
 chmod +x install.sh
-AWCHATD_RELEASE_TAG=v0.8.1-awchatd.eeea025 ./install.sh "$HOME/.local"
+AWCHATD_RELEASE_TAG=v0.8.2-awchatd.2f9d1fe ./install.sh "$HOME/.local"
 ```
 
 The installer downloads the release archive and `SHA256SUMS`, verifies the exact
@@ -21,7 +21,7 @@ archive digest, and installs into the requested prefix without `sudo`.
 
 ```sh
 ./scripts/smoke-test.sh "$HOME/.local" \
-  eeea025adf71d822329b56b46e93ee5b9f96bb4e
+  2f9d1fe967c63b45f5eec2c45e0a66440e58c7a4
 ```
 
 The smoke test starts a local deployment with unreachable dependencies and fake
